@@ -57,6 +57,7 @@ public class StateEntityServiceImpl<T extends StateEntity> implements StateEntit
 		} catch (Exception e) {
 			if (e instanceof STMException && 
 					(((STMException)e).getMessageId() == STMException.INVALID_EVENTID ||
+					((STMException)e).getMessageId() == STMException.UNAVAILABLE_TRANSITION ||
 					((STMException)e).getMessageId() == STMException.INVALID_TRANSITION)) {
 				throw new ErrorNumException(422, 6001,
 						"Invalid event or transition: Error = " + e.getMessage());

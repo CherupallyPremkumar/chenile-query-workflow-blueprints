@@ -8,6 +8,7 @@ public class ColumnMetadata {
 	}
 
 	private String name;
+	private String friendlyName;
 	private String dropDownQuery;
 	private boolean filterable;
 	private boolean sortable;
@@ -16,7 +17,7 @@ public class ColumnMetadata {
 	private ColumnType columnType;
 	private boolean containsQuery;
 	private boolean display = true;
-	private String columnName; 
+	private String columnName;
 	/**
 	 * Used for Date range.
 	 */
@@ -30,6 +31,7 @@ public class ColumnMetadata {
 	 * Used for grouping of columns in the front-end
 	 */
 	private String group = "";
+
 	/**
 	 * @return the name
 	 */
@@ -42,6 +44,14 @@ public class ColumnMetadata {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getFriendlyName() {
+		return friendlyName;
+	}
+
+	public void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
 	}
 
 	/**

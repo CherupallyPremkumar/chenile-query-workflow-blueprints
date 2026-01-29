@@ -25,6 +25,7 @@
     </parent>
 
     <properties>
+        <maven.compiler.release>17</maven.compiler.release>
         <revision>${chenile.query.workflow.blueprints.version}</revision>
     </properties>
     <licenses>
