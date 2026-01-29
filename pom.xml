@@ -13,7 +13,8 @@
 			<module>workflow-service</module>
 			<module>cucumber-workflow-utils</module>
       <module>workflow-utils</module>
-      <module>stm-generate-puml</module>
+      <module>chenile-security-api</module>
+			<module>stm-generate-puml</module>
     </modules>
 
     <packaging>pom</packaging>
