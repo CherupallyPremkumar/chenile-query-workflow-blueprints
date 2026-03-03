@@ -28,6 +28,17 @@ public abstract class BaseQueryStore implements QueryStore{
 		return queryMetadata;
 	}
 
+	@Override
+	public Map<String, QueryMetadata> retrieveAll() {
+		if (store.isEmpty()) {
+			Map<String, QueryMetadata> allMetadata = retrieveAllFromStore();
+			if (allMetadata != null && !allMetadata.isEmpty()) {
+				store.putAll(allMetadata);
+			}
+		}
+		return store;
+	}
+
 	public void addMetadata(QueryMetadata queryMetadata) {
 		if (null != queryMetadata) {
 			store.put(queryMetadata.getId(), queryMetadata);
@@ -39,5 +50,7 @@ public abstract class BaseQueryStore implements QueryStore{
 	}
 	
 	public abstract QueryMetadata retrieveQueryIdFromStore(String queryId);
+
+	public abstract Map<String, QueryMetadata> retrieveAllFromStore();
 
 }

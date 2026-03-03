@@ -41,7 +41,8 @@ public class QueryConfiguration {
 	@Value("${query.definitionFiles}")
 	private Resource[] queryDefinitionFiles;
 	
-	@Bean("queryDefinitions") QueryDefinitions queryDefinitions() throws IOException{
+	@Bean("queryDefinitions")
+	QueryDefinitions queryDefinitions() throws IOException{
 		return new QueryDefinitions(queryDefinitionFiles);
 	}
 

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SuppressWarnings("unchecked")
 public abstract class AbstractSearchServiceImpl implements SearchService<Map<String, Object>> {
 	Logger logger = LoggerFactory.getLogger(AbstractSearchServiceImpl.class);
+
 	protected static class EnhancedSearchRequest {
 		public EnhancedSearchRequest(SearchRequest<Map<String, Object>> searchRequest) {
 			this.originalSearchRequest = searchRequest;
@@ -44,16 +45,20 @@ public abstract class AbstractSearchServiceImpl implements SearchService<Map<Str
 	protected ContextContainer contextContainer;
 	// @Autowired protected STMActionsInfoProvider stmActionsInfoProvider;
 
+	@Override
+	public SearchResponse doSearch(SearchRequest<Map<String, Object>> searchRequest) {
+		return search(searchRequest);
+	}
+
 	public final SearchResponse search(SearchRequest<Map<String, Object>> searchRequest) {
 
 		QueryMetadata queryMetadata = queryStore.retrieve(searchRequest.getQueryName());
 
-		if (queryMetadata == null){
+		if (queryMetadata == null) {
 			logger.error("Query metadata not found for queryName: {}", searchRequest.getQueryName());
 			throw new NotFoundException(ErrorCodes.QUERY_ID_NOT_FOUND.getSubError(),
-					new Object[]{ searchRequest.getQueryName()});
+					new Object[] { searchRequest.getQueryName() });
 		}
-
 
 		// construct enhanced search request
 		EnhancedSearchRequest esr = new EnhancedSearchRequest(searchRequest);
@@ -65,7 +70,6 @@ public abstract class AbstractSearchServiceImpl implements SearchService<Map<Str
 		searchResponse = doSearch(esr, searchResponse, queryMetadata);
 		return searchResponse;
 	}
-
 
 	/**
 	 * Use the column metadata to enhance the filters that have been passed.
@@ -88,31 +92,30 @@ public abstract class AbstractSearchServiceImpl implements SearchService<Map<Str
 			}
 		}
 
-		if (searchInput.originalSearchRequest.isToDoList()){
-			if (!queryMetadata.isToDoList() ){
+		if (searchInput.originalSearchRequest.isToDoList()) {
+			if (!queryMetadata.isToDoList()) {
 				logger.warn("QueryName: {}. Search specifies todoList but query is not configured to support toDoList",
 						queryMetadata.getName());
-			}
-			else if (queryMetadata.getWorkflowName() == null){
+			} else if (queryMetadata.getWorkflowName() == null) {
 				logger.warn("QueryName: {}. Workflow name is null but it is specified as a toDoList",
 						queryMetadata.getName());
-			}else {
+			} else {
 				Collection<String> states = getAllowedStatesForCurrentUser(queryMetadata.getWorkflowName());
 				constructContainsQuery(searchInput.enhancedFilters, queryMetadata.getStateColumn(), states);
 				List<SortCriterion> sortCriteria = new ArrayList<>();
-				if (queryMetadata.getLateColumn() != null){
-					SortCriterion sc  = new SortCriterion();
+				if (queryMetadata.getLateColumn() != null) {
+					SortCriterion sc = new SortCriterion();
 					sc.setName(queryMetadata.getLateColumn());
 					sc.setAscendingOrder(true);
 					sortCriteria.add(sc);
 				}
-				if (queryMetadata.getTendingLateColumn() != null){
-					SortCriterion sc  = new SortCriterion();
+				if (queryMetadata.getTendingLateColumn() != null) {
+					SortCriterion sc = new SortCriterion();
 					sc.setName(queryMetadata.getTendingLateColumn());
 					sc.setAscendingOrder(true);
 					sortCriteria.add(sc);
 				}
-				if (!sortCriteria.isEmpty()){
+				if (!sortCriteria.isEmpty()) {
 					searchInput.originalSearchRequest.setSortCriteria(sortCriteria);
 				}
 			}
@@ -152,7 +155,7 @@ public abstract class AbstractSearchServiceImpl implements SearchService<Map<Str
 		List<Object> list;
 		if (value instanceof List) {
 			list = (List<Object>) value;
-		}else {
+		} else {
 			list = new ArrayList<Object>();
 			list.add(value);
 		}
@@ -188,7 +191,7 @@ public abstract class AbstractSearchServiceImpl implements SearchService<Map<Str
 		} else if (columnType == ColumnType.Number) {
 			filterList.add(first);
 			filterList.add(second);
-		} else if (columnType == ColumnType.Date || columnType == ColumnType.DateTime){
+		} else if (columnType == ColumnType.Date || columnType == ColumnType.DateTime) {
 			// treat these as strings and send them to the DB. Let the database
 			// worry about them.
 			filterList.add(firstStr);
@@ -198,7 +201,7 @@ public abstract class AbstractSearchServiceImpl implements SearchService<Map<Str
 	}
 
 	protected void constructContainsQuery(Map<String, Object> enhancedFilters, String name, Object value) {
-		if ( value instanceof String[] || value instanceof Collection<?>) {
+		if (value instanceof String[] || value instanceof Collection<?>) {
 			enhancedFilters.put(name, value);
 			return;
 		}
@@ -272,8 +275,8 @@ public abstract class AbstractSearchServiceImpl implements SearchService<Map<Str
 		this.contextContainer = contextContainer;
 	}
 
-	protected List<Map<String,String>> getAllowedActionsForWorkflowEntity(String workflowName, Object obj,
-												  String stateColumn, String flowColumn) {
+	protected List<Map<String, String>> getAllowedActionsForWorkflowEntity(String workflowName, Object obj,
+			String stateColumn, String flowColumn) {
 		if (obj == null)
 			return null;
 		State state = extractStateFromObject(obj, stateColumn, flowColumn);
@@ -281,30 +284,32 @@ public abstract class AbstractSearchServiceImpl implements SearchService<Map<Str
 			logger.warn("State for object of type {} is null.", workflowName);
 			return null;
 		}
-		List<Map<String,String>> ret = new ArrayList<>();
+		List<Map<String, String>> ret = new ArrayList<>();
 		STMActionsInfoProvider provider = WorkflowRegistry.getSTMActionInfoProvider(workflowName);
-		if(provider == null) {
+		if (provider == null) {
 			logger.warn("provider for workflow {} is null.", workflowName);
 			return null;
 		}
 		List<Map<String, String>> listOfMaps = provider.getAllowedActionsAndMetadata(state);
-		if (listOfMaps == null){
+		if (listOfMaps == null) {
 			logger.warn("return value from state info provider for workflow {} is null.", workflowName);
 			return null;
 		}
-		/*for (Map<String,String> map: listOfMaps){
-			HashMap<String,String> allowedActionInfo = new HashMap<>();
-			for (Entry<String,String> e: map.entrySet()){
-				if (e.getKey().startsWith("ui-")){
-					allowedActionInfo.put(e.getKey().substring(3),e.getValue());
-				}
-			}
-			ret.add(allowedActionInfo);
-		}*/
+		/*
+		 * for (Map<String,String> map: listOfMaps){
+		 * HashMap<String,String> allowedActionInfo = new HashMap<>();
+		 * for (Entry<String,String> e: map.entrySet()){
+		 * if (e.getKey().startsWith("ui-")){
+		 * allowedActionInfo.put(e.getKey().substring(3),e.getValue());
+		 * }
+		 * }
+		 * ret.add(allowedActionInfo);
+		 * }
+		 */
 		return listOfMaps;
 	}
 
-	protected Collection<String> getAllowedStatesForCurrentUser(String workflowName){
+	protected Collection<String> getAllowedStatesForCurrentUser(String workflowName) {
 		STMActionsInfoProvider provider = WorkflowRegistry.getSTMActionInfoProvider(workflowName);
 		return provider.getStatesAllowedForCurrentUser();
 	}
@@ -339,8 +344,8 @@ public abstract class AbstractSearchServiceImpl implements SearchService<Map<Str
 		 * the model level. If we merge, then the value from the elastic search always
 		 * overrides the actual SearchRequest.
 		 */
-//		if (two.getNumRowsInPage() != 0)
-//			one.setNumRowsInPage(two.getNumRowsInPage());
+		// if (two.getNumRowsInPage() != 0)
+		// one.setNumRowsInPage(two.getNumRowsInPage());
 
 		if (two.getSortCriteria() != null && !two.getSortCriteria().isEmpty()) {
 			if (one.getSortCriteria() == null || one.getSortCriteria().isEmpty()) {
