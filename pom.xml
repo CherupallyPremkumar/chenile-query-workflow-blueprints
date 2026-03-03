@@ -8,7 +8,7 @@
     <modules>
 			<module>chenile-query-controller</module>
 			<module>chenile-query-service</module>
-			<module>chenile-query-data-jpa</module>
+			<module>chenile-query-client</module>
 			<module>query-api</module>
 			<module>workflow-api</module>
 			<module>workflow-service</module>

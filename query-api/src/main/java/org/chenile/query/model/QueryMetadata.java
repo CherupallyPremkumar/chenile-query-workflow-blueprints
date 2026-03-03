@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * @author Raja Shankar Kolluru
- * All queries in the system must be configured with this information
+ *         All queries in the system must be configured with this information
  */
 
 public class QueryMetadata extends BaseEntity {
@@ -22,8 +22,8 @@ public class QueryMetadata extends BaseEntity {
     private String lateColumn = null;
     private String tendingLateColumn = null;
     /**
-     *  Denotes if the output of the query is associated with a workflow
-     *  this is used to determine the applicable actions.
+     * Denotes if the output of the query is associated with a workflow
+     * this is used to determine the applicable actions.
      */
     private String workflowName;
     private boolean toDoList = false;
@@ -32,6 +32,14 @@ public class QueryMetadata extends BaseEntity {
     private String[] acls = {};
     private Map<String, ColumnMetadata> columnMetadata = null;
     private boolean sortable;
+    /**
+     * The fully-qualified Java class name of the canonical response DTO for this
+     * query.
+     * Example: "com.homebase.ecom.user.dto.UserDto"
+     * Used by ChenileRepository to validate that repository method return types
+     * match the query's intended output at startup.
+     */
+    private String responseClass;
 
     public String getStateColumn() {
         return stateColumn;
@@ -159,5 +167,13 @@ public class QueryMetadata extends BaseEntity {
 
     public void setLateColumn(String lateColumn) {
         this.lateColumn = lateColumn;
+    }
+
+    public String getResponseClass() {
+        return responseClass;
+    }
+
+    public void setResponseClass(String responseClass) {
+        this.responseClass = responseClass;
     }
 }

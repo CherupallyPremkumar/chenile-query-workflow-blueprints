@@ -34,7 +34,7 @@ public class QueryUserFilterInterceptor extends BaseChenileInterceptor {
 	@Autowired
 	private SearchService<Map<String, Object>> searchService;
 	private static String USER_REPORTEES_QUERY_NAME = "AuthUser.reportees";
-	
+
 	@Value("${query.skip.auth.id:}")
 	private String skipAuthIds;
 
@@ -46,18 +46,18 @@ public class QueryUserFilterInterceptor extends BaseChenileInterceptor {
 		SearchRequest<?> searchRequest = (SearchRequest) exchange.getBody();
 		if (searchRequest == null)
 			return;
-		
+
 		String queryName = searchRequest.getQueryName();
 		// dont intercept the user_reportees query itself. This will result in recursion
 		if (queryName.equals(USER_REPORTEES_QUERY_NAME))
 			return;
-		
+
 		/**
 		 * If the query has to skip the Auth ID's query.
 		 * This is configured in query/datasource.properties.
 		 */
-		if (skipAuthIds.contains(queryName)) 
-				return;
+		if (skipAuthIds.contains(queryName))
+			return;
 
 		Map<String, Object> systemFilters = searchRequest.getSystemFilters();
 		if (null == systemFilters) {

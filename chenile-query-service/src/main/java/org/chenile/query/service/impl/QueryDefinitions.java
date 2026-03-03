@@ -3,6 +3,7 @@ package org.chenile.query.service.impl;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 
 import org.chenile.query.model.QueryMetadata;
 import org.slf4j.Logger;
@@ -36,5 +37,10 @@ public class QueryDefinitions extends BaseQueryStore{
 	@Override
 	public QueryMetadata retrieveQueryIdFromStore(String queryId) {
 		return store.get(queryId);
+	}
+
+	@Override
+	public Map<String, QueryMetadata> retrieveAllFromStore() {
+		return store;
 	}
 }
