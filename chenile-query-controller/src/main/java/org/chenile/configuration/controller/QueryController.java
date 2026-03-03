@@ -18,17 +18,26 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This sets up a query service. This can be used by pointing this service to
- * a database that can be configured in  application.yml.
+ * a database that can be configured in application.yml.
  */
 @RestController
 @ChenileController(value = "chenileMybatisQuery", serviceName = "searchService")
-public class QueryController extends ControllerSupport{
+public class QueryController extends ControllerSupport {
 	@PostMapping("/q/{queryName}")
 	// @InterceptedBy("securityInterceptor")
-	 public ResponseEntity<GenericResponse<SearchResponse>> search(
-			 HttpServletRequest request, 
-			 @PathVariable String queryName,
-			 @RequestBody SearchRequest<Map<String, Object>> searchRequest) {
-		 return process("search",request,queryName,searchRequest);
-	 }
+	public ResponseEntity<GenericResponse<SearchResponse>> search(
+			HttpServletRequest request,
+			@PathVariable String queryName,
+			@RequestBody SearchRequest<Map<String, Object>> searchRequest) {
+		return process("search", request, queryName, searchRequest);
+	}
+
+	@PostMapping("/q/")
+	// @InterceptedBy("securityInterceptor")
+	public ResponseEntity<GenericResponse<SearchResponse>> doSearch(
+			HttpServletRequest request,
+			@RequestBody SearchRequest<Map<String, Object>> searchRequest) {
+		return process("doSearch", request, searchRequest);
+	}
+
 }

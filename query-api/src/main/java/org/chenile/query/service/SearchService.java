@@ -8,4 +8,6 @@ import org.chenile.query.model.SearchResponse;
 
 public interface SearchService<T> {
 	public SearchResponse search(SearchRequest<T> searchInput);
+
+	public SearchResponse doSearch(SearchRequest<T> searchInput);
 }

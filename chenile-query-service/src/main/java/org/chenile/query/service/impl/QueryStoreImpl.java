@@ -27,4 +27,9 @@ public class QueryStoreImpl extends BaseQueryStore {
 		//return queryMetadata;
 		return null;
 	}
+
+	@Override
+	public java.util.Map<String, QueryMetadata> retrieveAllFromStore() {
+		return null;
+	}
 }
